@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aplikasi Input Bon</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            padding: 0;
+            color: #333;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .tabs {
+            display: flex;
+            background-color: #f9f9f9;
+            border-bottom: 2px solid #ddd;
+        }
+
+        .tab-button {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            background: none;
+            border: none;
+            font-size: 14px;
+            font-weight: 500;
+            color: #666;
+            transition: all 0.3s ease;
+        }
+
+        .tab-button:hover {
+            background-color: #efefef;
+        }
+
+        .tab-button.active {
+            color: #667eea;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 25px;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            color: #333;
+            font-size: 13px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 13px;
+            font-family: inherit;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            margin-bottom: 15px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+            font-size: 13px;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f9f9f9;
+            font-weight: 600;
+            color: #333;
+        }
+
+        tr:hover {
+            background-color: #f9f9f9;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background-color: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+
+        .btn-success {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #218838;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .button-group button {
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .item-input-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr auto;
+            gap: 10px;
+            margin-bottom: 10px;
+            align-items: flex-end;
+        }
+
+        .alert {
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            font-size: 13px;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .alert-info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .preview-section {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 4px;
+            margin-top: 15px;
+        }
+
+        .bon-preview {
+            background: white;
+            padding: 15px;
+            border: 1px solid #ddd;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            word-break: break-word;
+            max-height: 500px;
+            overflow-y: auto;
+            font-size: 12px;
+            line-height: 1.4;
+        }
+
+        .currency {
+            text-align: right;
+        }
+
+        .mt-15 {
+            margin-top: 15px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 30px;
+            color: #999;
+        }
+
+        .empty-state p {
+            font-size: 13px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #667eea;
+            font-size: 13px;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📋 Aplikasi Input Bon</h1>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-button active" onclick="switchTab('bon')">Bon</button>
+            <button class="tab-button" onclick="switchTab('evaluasi')">Evaluasi</button>
+            <button class="tab-button" onclick="switchTab('list')">List Harga</button>
+        </div>
+
+        <!-- TAB BON -->
+        <div id="bon" class="tab-content active">
+            <div id="bonAlert"></div>
+            
+            <h2 class="h3">Input Data Bon</h2>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="bonDate">Tanggal</label>
+                    <input type="date" id="bonDate">
+                </div>
+                <div class="form-group">
+                    <label for="bonNumber">Nomor Bon</label>
+                    <input type="text" id="bonNumber" placeholder="Cth: BON-001">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="customerName">Nama Pelanggan</label>
+                    <input type="text" id="customerName" placeholder="Nama pelanggan">
+                </div>
+                <div class="form-group">
+                    <label for="customerAddress">Alamat</label>
+                    <input type="text" id="customerAddress" placeholder="Alamat pelanggan">
+                </div>
+            </div>
+
+            <div class="h3" style="margin-top: 20px;">Daftar Item</div>
+
+            <div class="item-input-row">
+                <div>
+                    <label>Item</label>
+                    <select id="itemSelect">
+                        <option value="">Pilih Item</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Jumlah</label>
+                    <input type="number" id="itemQty" min="1" value="1">
+                </div>
+                <button class="btn btn-primary" onclick="addItem()">Tambah</button>
+            </div>
+
+            <div class="table-container" id="itemsTableContainer" style="display: none;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th>Qty</th>
+                            <th class="currency">Harga</th>
+                            <th class="currency">Subtotal</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="itemsTable"></tbody>
+                </table>
+            </div>
+
+            <div id="emptyItems" class="empty-state">
+                <p>Belum ada item. Tambahkan item untuk memulai.</p>
+            </div>
+
+            <div class="form-group" style="margin-top: 15px;">
+                <label>Total: <strong id="totalAmount">Rp0</strong></label>
+            </div>
+
+            <div class="button-group">
+                <button class="btn btn-secondary" onclick="resetBonForm()">Reset</button>
+                <button class="btn btn-primary" onclick="saveBonToSheet()">Simpan & Preview</button>
+            </div>
+
+            <div id="previewSection" class="preview-section" style="display: none;">
+                <div class="h3">Preview Bon</div>
+                <div class="bon-preview" id="bonPreview"></div>
+                <div class="button-group mt-15">
+                    <button class="btn btn-success" onclick="downloadAsImage()">📥 Unduh Gambar</button>
+                    <button class="btn btn-primary" onclick="printBon()">🖨️ Cetak</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB EVALUASI -->
+        <div id="evaluasi" class="tab-content">
+            <div id="evalAlert"></div>
+            
+            <div class="h3">Evaluasi Bon</div>
+            
+            <div class="form-group">
+                <label for="evalBonNumber">Pilih Bon</label>
+                <select id="evalBonNumber" onchange="loadBonData()">
+                    <option value="">Pilih bon untuk diedit</option>
+                </select>
+            </div>
+
+            <div id="evalContent" style="display: none;">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="evalDate">Tanggal</label>
+                        <input type="date" id="evalDate">
+                    </div>
+                    <div class="form-group">
+                        <label for="evalCustomerName">Nama Pelanggan</label>
+                        <input type="text" id="evalCustomerName">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="evalCustomerAddress">Alamat</label>
+                    <input type="text" id="evalCustomerAddress">
+                </div>
+
+                <div class="h3" style="margin-top: 15px;">Item</div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Item</th>
+                                <th>Qty</th>
+                                <th class="currency">Harga</th>
+                                <th class="currency">Subtotal</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="evalItemsTable"></tbody>
+                    </table>
+                </div>
+
+                <div class="button-group">
+                    <button class="btn btn-secondary" onclick="switchTab('bon')">Batal</button>
+                    <button class="btn btn-primary" onclick="updateBonToSheet()">Simpan Perubahan</button>
+                </div>
+            </div>
+
+            <div id="emptyEval" class="empty-state">
+                <p>Pilih bon untuk mengeditnya</p>
+            </div>
+        </div>
+
+        <!-- TAB LIST HARGA -->
+        <div id="list" class="tab-content">
+            <div id="listAlert"></div>
+            
+            <div class="h3">Manajemen List Harga</div>
+            
+            <div class="item-input-row">
+                <div>
+                    <label>Nama Item</label>
+                    <input type="text" id="newItemName" placeholder="Cth: BLD, BLP">
+                </div>
+                <div>
+                    <label>Harga (Rp)</label>
+                    <input type="number" id="newItemPrice" min="0">
+                </div>
+                <button class="btn btn-primary" onclick="addItemToList()">Tambah</button>
+            </div>
+
+            <div class="table-container" style="margin-top: 15px;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Nama Item</th>
+                            <th class="currency">Harga (Rp)</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="priceListTable"></tbody>
+                </table>
+            </div>
+
+            <div class="button-group">
+                <button class="btn btn-secondary" onclick="resetPriceForm()">Reset Form</button>
+                <button class="btn btn-success" onclick="savePriceListToSheet()">💾 Simpan</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ===== STATE =====
+        let priceList = [];
+        let bons = [];
+        let currentBonData = null;
+        let currentBonIndex = -1;
+
+        // ===== INITIALIZE =====
+        document.addEventListener('DOMContentLoaded', function() {
+            setTodayDate();
+            loadPriceList();
+            loadAllBons();
+        });
+
+        function setTodayDate() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('bonDate').value = today;
+        }
+
+        // ===== TAB SWITCHING =====
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // ===== PRICE LIST FUNCTIONS =====
+        function loadPriceList() {
+            google.script.run.withSuccessHandler(function(result) {
+                priceList = result;
+                renderPriceListTable();
+                populateItemSelect();
+            }).getPriceList();
+        }
+
+        function renderPriceListTable() {
+            const tbody = document.getElementById('priceListTable');
+            tbody.innerHTML = '';
+            
+            priceList.forEach((item, index) => {
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>${item.name}</td>
+                    <td class="currency">Rp${formatCurrency(item.price)}</td>
+                    <td><button class="btn btn-danger" onclick="deletePriceItem(${index})">Hapus</button></td>
+                `;
+            });
+        }
+
+        function addItemToList() {
+            const name = document.getElementById('newItemName').value.trim();
+            const price = parseInt(document.getElementById('newItemPrice').value) || 0;
+            
+            if (!name) {
+                showAlert('listAlert', 'Nama item tidak boleh kosong!', 'error');
+                return;
+            }
+            
+            if (priceList.some(item => item.name.toLowerCase() === name.toLowerCase())) {
+                showAlert('listAlert', 'Item sudah ada!', 'error');
+                return;
+            }
+            
+            priceList.push({ name, price });
+            renderPriceListTable();
+            populateItemSelect();
+            document.getElementById('newItemName').value = '';
+            document.getElementById('newItemPrice').value = '';
+        }
+
+        function deletePriceItem(index) {
+            if (confirm('Yakin ingin menghapus item ini?')) {
+                priceList.splice(index, 1);
+                renderPriceListTable();
+                populateItemSelect();
+            }
+        }
+
+        function savePriceListToSheet() {
+            google.script.run.withSuccessHandler(function(result) {
+                showAlert('listAlert', result.message, 'success');
+            }).savePriceList(priceList);
+        }
+
+        function resetPriceForm() {
+            document.getElementById('newItemName').value = '';
+            document.getElementById('newItemPrice').value = '';
+        }
+
+        // ===== BON FUNCTIONS =====
+        function populateItemSelect() {
+            const select = document.getElementById('itemSelect');
+            select.innerHTML = '<option value="">Pilih Item</option>';
+            
+            priceList.forEach(item => {
+                const option = document.createElement('option');
+                option.value = item.name;
+                option.textContent = `${item.name} (Rp${formatCurrency(item.price)})`;
+                option.dataset.price = item.price;
+                select.appendChild(option);
+            });
+        }
+
+        document.addEventListener('change', function(e) {
+            if (e.target.id === 'itemSelect') {
+                const selected = e.target.options[e.target.selectedIndex];
+                const price = selected.dataset.price || 0;
+                // Note: Qty otomatis dihandle saat add
+            }
+        });
+
+        function addItem() {
+            const itemSelect = document.getElementById('itemSelect');
+            const itemQty = parseInt(document.getElementById('itemQty').value) || 1;
+            const selectedOption = itemSelect.options[itemSelect.selectedIndex];
+            
+            if (!itemSelect.value) {
+                showAlert('bonAlert', 'Pilih item terlebih dahulu!', 'error');
+                return;
+            }
+            
+            const itemPrice = priceList.find(p => p.name === itemSelect.value).price;
+            
+            if (!currentBonData) {
+                currentBonData = {
+                    date: document.getElementById('bonDate').value,
+                    number: document.getElementById('bonNumber').value,
+                    customer: document.getElementById('customerName').value,
+                    address: document.getElementById('customerAddress').value,
+                    items: []
+                };
+            }
+            
+            currentBonData.items.push({
+                name: itemSelect.value,
+                qty: itemQty,
+                price: itemPrice
+            });
+            
+            renderItemsTable();
+            document.getElementById('itemQty').value = 1;
+            itemSelect.value = '';
+        }
+
+        function renderItemsTable() {
+            if (!currentBonData || currentBonData.items.length === 0) {
+                document.getElementById('itemsTableContainer').style.display = 'none';
+                document.getElementById('emptyItems').style.display = 'block';
+                document.getElementById('totalAmount').textContent = 'Rp0';
+                return;
+            }
+            
+            document.getElementById('itemsTableContainer').style.display = 'block';
+            document.getElementById('emptyItems').style.display = 'none';
+            
+            const tbody = document.getElementById('itemsTable');
+            tbody.innerHTML = '';
+            
+            let total = 0;
+            currentBonData.items.forEach((item, index) => {
+                const subtotal = item.qty * item.price;
+                total += subtotal;
+                
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td>${item.name}</td>
+                    <td>${item.qty}</td>
+                    <td class="currency">Rp${formatCurrency(item.price)}</td>
+                    <td class="currency">Rp${formatCurrency(subtotal)}</td>
+                    <td><button class="btn btn-danger" onclick="removeItem(${index})">Hapus</button></td>
+                `;
+            });
+            
+            document.getElementById('totalAmount').textContent = `Rp${formatCurrency(total)}`;
+        }
+
+        function removeItem(index) {
+            if (currentBonData) {
+                currentBonData.items.splice(index, 1);
+                renderItemsTable();
+            }
+        }
+
+        function saveBonToSheet() {
+            const date = document.getElementById('bonDate').value;
+            const number = document.getElementById('bonNumber').value;
+            const customer = document.getElementById('customerName').value;
+            const address = document.getElementById('customerAddress').value;
+            
+            if (!date || !number || !customer || !address) {
+                showAlert('bonAlert', 'Semua field harus diisi!', 'error');
+                return;
+            }
+            
+            if (!currentBonData || currentBonData.items.length === 0) {
+                showAlert('bonAlert', 'Tambahkan minimal satu item!', 'error');
+                return;
+            }
+            
+            currentBonData.date = date;
+            currentBonData.number = number;
+            currentBonData.customer = customer;
+            currentBonData.address = address;
+            
+            google.script.run.withSuccessHandler(function(result) {
+                showAlert('bonAlert', result.message, 'success');
+                generatePreview();
+                loadAllBons();
+            }).saveBon(currentBonData);
+        }
+
+        function generatePreview() {
+            if (!currentBonData) return;
+            
+            let previewText = '╔════════════════════════════════════╗\n';
+            previewText += '║         BON PENJUALAN              ║\n';
+            previewText += '╚════════════════════════════════════╝\n\n';
+            
+            previewText += `Nomor Bon    : ${currentBonData.number}\n`;
+            previewText += `Tanggal      : ${formatDate(currentBonData.date)}\n`;
+            previewText += `Pelanggan    : ${currentBonData.customer}\n`;
+            previewText += `Alamat       : ${currentBonData.address}\n\n`;
+            
+            previewText += `────────────────────────────────────\n`;
+            previewText += `ITEM                  QTY    HARGA      TOTAL\n`;
+            previewText += `────────────────────────────────────\n`;
+            
+            let total = 0;
+            currentBonData.items.forEach(item => {
+                const subtotal = item.qty * item.price;
+                total += subtotal;
+                previewText += `${padRight(item.name, 20)}${padRight(item.qty.toString(), 5)}${padRight('Rp' + formatCurrency(item.price), 12)}Rp${formatCurrency(subtotal)}\n`;
+            });
+            
+            previewText += `────────────────────────────────────\n`;
+            previewText += `TOTAL${padRight('', 29)}Rp${formatCurrency(total)}\n`;
+            previewText += `────────────────────────────────────\n\n`;
+            previewText += `Terima kasih!\n`;
+            previewText += `Tanggal cetak: ${new Date().toLocaleString('id-ID')}\n`;
+            
+            document.getElementById('bonPreview').textContent = previewText;
+            document.getElementById('previewSection').style.display = 'block';
+        }
+
+        function loadAllBons() {
+            google.script.run.withSuccessHandler(function(result) {
+                bons = result;
+                const select = document.getElementById('evalBonNumber');
+                select.innerHTML = '<option value="">Pilih bon untuk diedit</option>';
+                
+                bons.forEach((bon, index) => {
+                    const option = document.createElement('option');
+                    option.value = index;
+                    option.textContent = `${bon.number} - ${bon.customer} (${bon.date})`;
+                    select.appendChild(option);
+                });
+            }).getAllBons();
+        }
+
+        function loadBonData() {
+            const index = document.getElementById('evalBonNumber').value;
+            
+            if (index === '') {
+                document.getElementById('evalContent').style.display = 'none';
+                document.getElementById('emptyEval').style.display = 'block';
+                return;
+            }
+            
+            currentBonIndex = parseInt(index);
+            const bon = bons[currentBonIndex];
+            
+            document.getElementById('evalDate').value = bon.date;
+            document.getElementById('evalCustomerName').value = bon.customer;
+            document.getElementById('evalCustomerAddress').value = bon.address;
+            
+            // Parse items from string
+            const itemsArray = bon.items.split('; ').map(item => {
+                const match = item.match(/(.+?)\s+x(\d+)\s+@\s+Rp([\d.]+)/);
+                if (match) {
+                    return {
+                        name: match[1],
+                        qty: parseInt(match[2]),
+                        price: parseInt(match[3].replace(/\./g, ''))
+                    };
+                }
+            }).filter(Boolean);
+            
+            currentBonData = {
+                date: bon.date,
+                number: bon.number,
+                customer: bon.customer,
+                address: bon.address,
+                items: itemsArray
+            };
+            
+            renderEvalItemsTable();
+            document.getElementById('evalContent').style.display = 'block';
+            document.getElementById('emptyEval').style.display = 'none';
+        }
+
+        function renderEvalItemsTable() {
+            const tbody = document.getElementById('evalItemsTable');
+            tbody.innerHTML = '';
+            
+            currentBonData.items.forEach((item, index) => {
+                const subtotal = item.qty * item.price;
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td>
+                        <input type="text" value="${item.name}" class="eval-item-name" data-index="${index}" style="width: 100%; padding: 5px;">
+                    </td>
+                    <td>
+                        <input type="number" value="${item.qty}" class="eval-item-qty" data-index="${index}" min="1" style="width: 100%; padding: 5px;">
+                    </td>
+                    <td class="currency">
+                        <input type="number" value="${item.price}" class="eval-item-price" data-index="${index}" min="0" style="width: 100%; padding: 5px; text-align: right;">
+                    </td>
+                    <td class="currency">Rp${formatCurrency(subtotal)}</td>
+                    <td><button class="btn btn-danger" onclick="removeEvalItem(${index})">Hapus</button></td>
+                `;
+            });
+        }
+
+        function removeEvalItem(index) {
+            currentBonData.items.splice(index, 1);
+            renderEvalItemsTable();
+        }
+
+        function updateBonToSheet() {
+            // Update items from form
+            const nameInputs = document.querySelectorAll('.eval-item-name');
+            const qtyInputs = document.querySelectorAll('.eval-item-qty');
+            const priceInputs = document.querySelectorAll('.eval-item-price');
+            
+            nameInputs.forEach((input, index) => {
+                currentBonData.items[index].name = input.value;
+                currentBonData.items[index].qty = parseInt(qtyInputs[index].value) || 0;
+                currentBonData.items[index].price = parseInt(priceInputs[index].value) || 0;
+            });
+            
+            google.script.run.withSuccessHandler(function(result) {
+                showAlert('evalAlert', result.message, 'success');
+                setTimeout(() => {
+                    switchTab('bon');
+                    resetBonForm();
+                    loadAllBons();
+                }, 1500);
+            }).updateBon(currentBonData.number, currentBonData);
+        }
+
+        function resetBonForm() {
+            document.getElementById('bonDate').value = new Date().toISOString().split('T')[0];
+            document.getElementById('bonNumber').value = '';
+            document.getElementById('customerName').value = '';
+            document.getElementById('customerAddress').value = '';
+            document.getElementById('itemSelect').value = '';
+            document.getElementById('itemQty').value = 1;
+            currentBonData = null;
+            renderItemsTable();
+            document.getElementById('previewSection').style.display = 'none';
+        }
+
+        // ===== UTILITIES =====
+        function formatCurrency(value) {
+            return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            return date.toLocaleDateString('id-ID', options);
+        }
+
+        function padRight(str, length) {
+            return (str + ' '.repeat(length)).substring(0, length);
+        }
+
+        function showAlert(elementId, message, type) {
+            const alert = document.getElementById(elementId);
+            alert.textContent = message;
+            alert.className = `alert alert-${type}`;
+            alert.style.display = 'block';
+            
+            setTimeout(() => {
+                alert.style.display = 'none';
+            }, 3000);
+        }
+
+        function downloadAsImage() {
+            const preview = document.getElementById('bonPreview');
+            const element = document.createElement('div');
+            element.innerHTML = `
+                <div style="font-family: Courier New; border: 2px solid black; padding: 20px; width: 600px; background: white;">
+                    <pre>${preview.textContent}</pre>
+                </div>
+            `;
+            
+            html2canvas(element, {
+                backgroundColor: '#fff'
+            }).then(canvas => {
+                const link = document.createElement('a');
+                link.href = canvas.toDataURL('image/png');
+                link.download = `bon-${currentBonData.number}.png`;
+                link.click();
+            }).catch(() => {
+                alert('Untuk mengunduh gambar, copy text preview ke aplikasi desain atau gunakan Print > Save as PDF');
+            });
+        }
+
+        function printBon() {
+            const preview = document.getElementById('bonPreview').textContent;
+            const printWindow = window.open('', '', 'height=600,width=800');
+            
+            const htmlContent = `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>Cetak Bon</title>
+                    <style>
+                        body { font-family: 'Courier New', monospace; margin: 20px; }
+                        .bon { border: 2px solid black; padding: 20px; max-width: 600px; }
+                        pre { white-space: pre-wrap; }
+                        @media print { body { margin: 0; } }
+                    </style>
+                </head>
+                <body>
+                    <div class="bon">
+                        <pre>${preview}</pre>
+                    </div>
+                    <script>
+                        window.print();
+                    </script>
+                </body>
+                </html>
+            `;
+            
+            printWindow.document.write(htmlContent);
+            printWindow.document.close();
+        }
+    </script>
+</body>
+</html>
